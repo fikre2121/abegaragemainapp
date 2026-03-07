@@ -1,0 +1,32 @@
+.menu-title {
+  font-size: 15px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: #b9bed0;
+  padding: 30px 24px 8px 28px;
+  margin-bottom: 0;
+}
+.side-menu{
+   background-color:#212c45 ; 
+   height: 100vh;
+}
+.admin-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 0;
+}
+.admin-menu-item a {
+  display: block;
+  padding: 16px 28px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+}
+.admin-menu-item.active a, .admin-menu-item a:focus, .admin-menu-item a:hover {
+  background: #212c45;
+  color: #fad8d8;
+  border-left: 3px solid #f82424;
+  font-weight: 600;
+}

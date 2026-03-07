@@ -1,0 +1,26 @@
+{
+  "name": "abegaragemainapp",
+  "version": "1.0.0",
+  "description": "main Garage App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fikre2121/abegaragemainapp.git"
+  },
+  "author": "fikre",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fikre2121/abegaragemainapp/issues"
+  },
+  "homepage": "https://github.com/fikre2121/abegaragemainapp#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mysql2": "^3.18.2",
+    "nodemon": "^3.1.14"
+  }
+}
