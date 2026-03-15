@@ -14,18 +14,20 @@ import "./assets/styles/custom.css"
 // components
 import Header from './markup/components/header/Header'
 import Foter from './markup/components/footer/Foter'
+import Addcustomer from './markup/pages/admin/addcustomer/Addcustomerp'
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-    <Header/>
+      <Header />
       <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/login" element={<Login/>} />
-        <Route path="/admin/add-employee" element={<Addemployee/>} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin/add-employee" element={<Addemployee />} />
+        <Route path="/admin/add-customer" element={<Addcustomer />} />
       </Routes>
-      <Foter/>
+      <Foter />
     </>
   );
 }

@@ -1,55 +1,142 @@
-import React from "react";
-import Logo from "../../../assets/templateassets/images/custom/logo.png"
+import React, { useEffect, useRef } from "react";
+import Logo from "../../../assets/templateassets/images/custom/logo.png";
+import { FaBars } from "react-icons/fa";
 function Header() {
+  const headerRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+  const menuOuterRef = useRef(null);
+  const stickyMenuRef = useRef(null);
+
+  useEffect(() => {
+    /* ---------------------------
+       Sticky Header (headerStyle)
+    ---------------------------- */
+
+    const handleScroll = () => {
+      const windowpos = window.scrollY;
+      const siteHeader = headerRef.current;
+
+      if (windowpos > 100) {
+        siteHeader.classList.add("fixed-header");
+      } else {
+        siteHeader.classList.remove("fixed-header");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    /* ---------------------------
+       Clone Menu (script.js logic)
+    ---------------------------- */
+
+    const mainMenu = document.querySelector(".main-menu .navigation");
+
+    if (mainMenu && menuOuterRef.current && stickyMenuRef.current) {
+      const menuClone1 = mainMenu.cloneNode(true);
+      const menuClone2 = mainMenu.cloneNode(true);
+
+      menuOuterRef.current.appendChild(menuClone1);
+      stickyMenuRef.current.appendChild(menuClone2);
+    }
+
+    /* ---------------------------
+       Add dropdown button
+    ---------------------------- */
+
+    const dropdowns = document.querySelectorAll(
+      ".main-header .navigation li.dropdown",
+    );
+
+    dropdowns.forEach((li) => {
+      const btn = document.createElement("div");
+      btn.className = "dropdown-btn";
+      btn.innerHTML = '<span class="fa fa-angle-right"></span>';
+
+      li.appendChild(btn);
+
+      btn.addEventListener("click", () => {
+        btn.classList.toggle("open");
+
+        const submenu = btn.previousElementSibling;
+
+        if (submenu) {
+          submenu.style.display =
+            submenu.style.display === "block" ? "none" : "block";
+        }
+      });
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  /* ---------------------------
+     Mobile menu toggle
+  ---------------------------- */
+
+  const openMobileMenu = () => {
+    document.body.classList.add("mobile-menu-visible");
+  };
+
+  const closeMobileMenu = () => {
+    document.body.classList.remove("mobile-menu-visible");
+  };
+
   return (
     <div>
-      <header class="main-header header-style-one">
-        <div class="header-top">
-          <div class="auto-container">
-            <div class="inner-container">
-              <div class="left-column">
-                <div class="text">Enjoy the Beso while we fix your car</div>
-                <div class="office-hour">Monday - Saturday 7:00AM - 6:00PM</div>
+      <header ref={headerRef} className="main-header header-style-one">
+        <div className="header-top">
+          <div className="auto-container">
+            <div className="inner-container">
+              <div className="left-column">
+                <div className="text">Enjoy the Beso while we fix your car</div>
+                <div className="office-hour">
+                  Monday - Saturday 7:00AM - 6:00PM
+                </div>
               </div>
-              <div class="right-column">
-                <div class="phone-number">
-                  Schedule Your Appontment Today :{" "}
-                  <strong>1800 456 7890</strong>
+
+              <div className="right-column">
+                <div className="phone-number">
+                  Schedule Your Appontment Today :<strong>1800 456 7890</strong>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="header-upper">
-          <div class="auto-container">
-            <div class="inner-container">
-              <div class="logo-box">
-                <div class="logo">
+        <div className="header-upper">
+          <div className="auto-container">
+            <div className="inner-container">
+              <div className="logo-box">
+                <div className="logo">
                   <a href="/">
                     <img src={Logo} alt="" />
                   </a>
                 </div>
               </div>
-              <div class="right-column">
-                <div class="nav-outer">
-                  <div class="mobile-nav-toggler">
-                    <img src="assets/images/icons/icon-bar.png" alt="" />
+
+              <div className="right-column">
+                <div className="nav-outer">
+                  <div className="mobile-nav-toggler" onClick={openMobileMenu}>
+                    <FaBars size={24} color="#222" />
                   </div>
 
-                  <nav class="main-menu navbar-expand-md navbar-light">
+                  <nav className="main-menu navbar-expand-md navbar-light">
                     <div
-                      class="collapse navbar-collapse show clearfix"
+                      className="collapse navbar-collapse show clearfix"
                       id="navbarSupportedContent"
                     >
-                      <ul class="navigation">
-                        <li class="dropdown">
+                      <ul className="navigation">
+                        <li className="dropdown">
                           <a href="/">Home</a>
                         </li>
-                        <li class="dropdown">
+
+                        <li className="dropdown">
                           <a href="/about">About Us</a>
                         </li>
-                        <li class="dropdown">
+
+                        <li className="dropdown">
                           <a href="/services">Services</a>
                         </li>
 
@@ -60,10 +147,12 @@ function Header() {
                     </div>
                   </nav>
                 </div>
-                <div class="search-btn"></div>
-                <div class="link-btn">
-                  <a href="/login" class="theme-btn btn-style-one">
-                    Login{" "}
+
+                <div className="search-btn"></div>
+
+                <div className="link-btn">
+                  <a href="/login" className="theme-btn btn-style-one">
+                    Login
                   </a>
                 </div>
               </div>
@@ -71,29 +160,38 @@ function Header() {
           </div>
         </div>
 
-        <div class="sticky-header">
-          <div class="header-upper">
-            <div class="auto-container">
-              <div class="inner-container">
-                <div class="logo-box">
-                  <div class="logo">
+        <div className="sticky-header">
+          <div className="header-upper">
+            <div className="auto-container">
+              <div className="inner-container">
+                <div className="logo-box">
+                  <div className="logo">
                     <a href="/">
-                      <img src="assets/images/custom/logo.png" alt="" />
+                      <img src={Logo} alt="" />
                     </a>
                   </div>
                 </div>
-                <div class="right-column">
-                  <div class="nav-outer">
-                    <div class="mobile-nav-toggler">
-                      <img src="assets/images/icons/icon-bar.png" alt="" />
+
+                <div className="right-column">
+                  <div className="nav-outer">
+                    <div
+                      className="mobile-nav-toggler"
+                      onClick={openMobileMenu}
+                    >
+                      <img src="/assets/images/icons/icon-bar.png" alt="" />
                     </div>
 
-                    <nav class="main-menu navbar-expand-md navbar-light"></nav>
+                    <nav
+                      ref={stickyMenuRef}
+                      className="main-menu navbar-expand-md navbar-light"
+                    ></nav>
                   </div>
-                  <div class="search-btn"></div>
-                  <div class="link-btn">
-                    <a href="/login" class="theme-btn btn-style-one">
-                      Login{" "}
+
+                  <div className="search-btn"></div>
+
+                  <div className="link-btn">
+                    <a href="/login" className="theme-btn btn-style-one">
+                      Login
                     </a>
                   </div>
                 </div>
@@ -102,44 +200,53 @@ function Header() {
           </div>
         </div>
 
-        <div class="mobile-menu">
-          <div class="menu-backdrop"></div>
-          <div class="close-btn">
-            <span class="icon flaticon-remove"></span>
+        {/* Mobile Menu */}
+
+        <div ref={mobileMenuRef} className="mobile-menu">
+          <div className="menu-backdrop" onClick={closeMobileMenu}></div>
+
+          <div className="close-btn" onClick={closeMobileMenu}>
+            <span className="icon flaticon-remove"></span>
           </div>
 
-          <nav class="menu-box">
-            <div class="nav-logo">
-              <a href="index.html">
-                <img src="assets/images/logo-two.png" alt="" title="" />
+          <nav className="menu-box">
+            <div className="nav-logo">
+              <a href="/">
+                <img src={Logo} alt="" />
               </a>
             </div>
-            <div class="menu-outer"></div>
-            <div class="social-links">
-              <ul class="clearfix">
+
+            <div ref={menuOuterRef} className="menu-outer"></div>
+
+            <div className="social-links">
+              <ul className="clearfix">
                 <li>
                   <a href="#">
-                    <span class="fab fa-twitter"></span>
+                    <span className="fab fa-twitter"></span>
                   </a>
                 </li>
+
                 <li>
                   <a href="#">
-                    <span class="fab fa-facebook-square"></span>
+                    <span className="fab fa-facebook-square"></span>
                   </a>
                 </li>
+
                 <li>
                   <a href="#">
-                    <span class="fab fa-pinterest-p"></span>
+                    <span className="fab fa-pinterest-p"></span>
                   </a>
                 </li>
+
                 <li>
                   <a href="#">
-                    <span class="fab fa-instagram"></span>
+                    <span className="fab fa-instagram"></span>
                   </a>
                 </li>
+
                 <li>
                   <a href="#">
-                    <span class="fab fa-youtube"></span>
+                    <span className="fab fa-youtube"></span>
                   </a>
                 </li>
               </ul>
@@ -147,9 +254,9 @@ function Header() {
           </nav>
         </div>
 
-        <div class="nav-overlay">
-          <div class="cursor"></div>
-          <div class="cursor-follower"></div>
+        <div className="nav-overlay">
+          <div className="cursor"></div>
+          <div className="cursor-follower"></div>
         </div>
       </header>
     </div>

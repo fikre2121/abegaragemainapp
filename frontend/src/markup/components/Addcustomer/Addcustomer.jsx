@@ -1,13 +1,13 @@
 import React from "react";
 
-function Addemployform() {
+function Addcustomer() {
   return (
     <div>
       <section className="contact-section">
         <div className="auto-container">
           <div className="">
             <div className="contact-title">
-              <h2>Add a new Employee</h2>
+              <h2>Add a new Customer</h2>
               <div className="text">
                 Praising pain was born and I will give you a complete account of
                 the system, and
@@ -90,4 +90,4 @@ function Addemployform() {
   );
 }
 
-export default Addemployform;
+export default Addcustomer;

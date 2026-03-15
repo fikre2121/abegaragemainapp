@@ -1,21 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
+import { Menu, X } from "lucide-react";
 import Addemployform from "../../../components/addemployeeform/Addemployform";
 import Adminmenu from "../../../components/adminmenu/Adminmenu";
 
 function Addemployee() {
-  return (
-    <div className="container-fluid py-4 admin-pages">
-      <div className="row">
-        {/* Sidebar / Menu */}
-        <div className="col-12 col-md-4 col-lg-3 mb-4">
-          <Adminmenu />
-        </div>
+  const [menuOpen, setMenuOpen] = useState(false);
 
-        {/* Form */}
-        <div className="col-12 col-md-8 col-lg-9">
+  return (
+    <div className="admin-layout">
+      {/* Mobile Toggle Button */}
+      <button
+        className="menu-toggle d-lg-none"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        {menuOpen ? <X size={26} /> : <Menu size={26} />}
+      </button>
+
+      {/* Sidebar */}
+      <aside className={`admin-sidebar ${menuOpen ? "open" : ""}`}>
+        <Adminmenu />
+      </aside>
+
+      {/* Main Content */}
+      <main className="admin-content">
+        <div className="container-fluid py-4">
           <Addemployform />
         </div>
-      </div>
+      </main>
     </div>
   );
 }
