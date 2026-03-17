@@ -124,3 +124,47 @@
   }
 
 }
+
+/* ro the add vehicle */
+Form container
+.vehicle-form-wrapper {
+  max-width: 550px;
+  margin: 40px auto;
+  padding: 35px;
+  background: #f9fafc;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+/* Center title */
+.text-center {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+
+
+
+/* Close Button */
+.close-form-btn {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background: #e30613;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Hover effect */
+.close-form-btn:hover {
+  background: #c1000c;
+}
