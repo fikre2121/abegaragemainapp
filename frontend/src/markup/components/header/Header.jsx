@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Logo from "../../../assets/templateassets/images/custom/logo.png";
 import { FaBars } from "react-icons/fa";
+
 function Header() {
   const headerRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -9,14 +10,13 @@ function Header() {
 
   useEffect(() => {
     /* ---------------------------
-       Sticky Header (headerStyle)
+       Sticky Header
     ---------------------------- */
-
     const handleScroll = () => {
-      const windowpos = window.scrollY;
       const siteHeader = headerRef.current;
+      if (!siteHeader) return;
 
-      if (windowpos > 100) {
+      if (window.scrollY > 100) {
         siteHeader.classList.add("fixed-header");
       } else {
         siteHeader.classList.remove("fixed-header");
@@ -26,45 +26,17 @@ function Header() {
     window.addEventListener("scroll", handleScroll);
 
     /* ---------------------------
-       Clone Menu (script.js logic)
+       Clone Menu (FIXED DUPLICATION)
     ---------------------------- */
-
     const mainMenu = document.querySelector(".main-menu .navigation");
 
-    if (mainMenu && menuOuterRef.current && stickyMenuRef.current) {
-      const menuClone1 = mainMenu.cloneNode(true);
-      const menuClone2 = mainMenu.cloneNode(true);
+    if (mainMenu && stickyMenuRef.current) {
+      // ✅ FIX: clear previous clone before adding new one
+      stickyMenuRef.current.innerHTML = "";
 
-      menuOuterRef.current.appendChild(menuClone1);
-      stickyMenuRef.current.appendChild(menuClone2);
+      const menuClone = mainMenu.cloneNode(true);
+      stickyMenuRef.current.appendChild(menuClone);
     }
-
-    /* ---------------------------
-       Add dropdown button
-    ---------------------------- */
-
-    const dropdowns = document.querySelectorAll(
-      ".main-header .navigation li.dropdown",
-    );
-
-    dropdowns.forEach((li) => {
-      const btn = document.createElement("div");
-      btn.className = "dropdown-btn";
-      btn.innerHTML = '<span class="fa fa-angle-right"></span>';
-
-      li.appendChild(btn);
-
-      btn.addEventListener("click", () => {
-        btn.classList.toggle("open");
-
-        const submenu = btn.previousElementSibling;
-
-        if (submenu) {
-          submenu.style.display =
-            submenu.style.display === "block" ? "none" : "block";
-        }
-      });
-    });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -123,10 +95,7 @@ function Header() {
                   </div>
 
                   <nav className="main-menu navbar-expand-md navbar-light">
-                    <div
-                      className="collapse navbar-collapse show clearfix"
-                      id="navbarSupportedContent"
-                    >
+                    <div className="collapse navbar-collapse show clearfix">
                       <ul className="navigation">
                         <li className="dropdown">
                           <a href="/">Home</a>
@@ -148,8 +117,6 @@ function Header() {
                   </nav>
                 </div>
 
-                <div className="search-btn"></div>
-
                 <div className="link-btn">
                   <a href="/login" className="theme-btn btn-style-one">
                     Login
@@ -160,6 +127,7 @@ function Header() {
           </div>
         </div>
 
+        {/* Sticky Header */}
         <div className="sticky-header">
           <div className="header-upper">
             <div className="auto-container">
@@ -178,7 +146,7 @@ function Header() {
                       className="mobile-nav-toggler"
                       onClick={openMobileMenu}
                     >
-                      <img src="/assets/images/icons/icon-bar.png" alt="" />
+                      <FaBars size={24} color="#222" />
                     </div>
 
                     <nav
@@ -186,8 +154,6 @@ function Header() {
                       className="main-menu navbar-expand-md navbar-light"
                     ></nav>
                   </div>
-
-                  <div className="search-btn"></div>
 
                   <div className="link-btn">
                     <a href="/login" className="theme-btn btn-style-one">
@@ -201,7 +167,6 @@ function Header() {
         </div>
 
         {/* Mobile Menu */}
-
         <div ref={mobileMenuRef} className="mobile-menu">
           <div className="menu-backdrop" onClick={closeMobileMenu}></div>
 
@@ -216,47 +181,8 @@ function Header() {
               </a>
             </div>
 
-            <div ref={menuOuterRef} className="menu-outer"></div>
-
-            <div className="social-links">
-              <ul className="clearfix">
-                <li>
-                  <a href="#">
-                    <span className="fab fa-twitter"></span>
-                  </a>
-                </li>
-
-                <li>
-                  <a href="#">
-                    <span className="fab fa-facebook-square"></span>
-                  </a>
-                </li>
-
-                <li>
-                  <a href="#">
-                    <span className="fab fa-pinterest-p"></span>
-                  </a>
-                </li>
-
-                <li>
-                  <a href="#">
-                    <span className="fab fa-instagram"></span>
-                  </a>
-                </li>
-
-                <li>
-                  <a href="#">
-                    <span className="fab fa-youtube"></span>
-                  </a>
-                </li>
-              </ul>
-            </div>
+            <div className="menu-outer"></div>
           </nav>
-        </div>
-
-        <div className="nav-overlay">
-          <div className="cursor"></div>
-          <div className="cursor-follower"></div>
         </div>
       </header>
     </div>
