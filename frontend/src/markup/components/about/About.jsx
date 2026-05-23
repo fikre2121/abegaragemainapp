@@ -1,6 +1,6 @@
 import React from "react";
 import Pagetitle from "../ui/Pagetitle";
-import Image from "../../../../src/assets/templateassets/images/custom/pages/contact\ 3.jpg";
+import Image from "../../../../src/assets/templateassets/images/custom/pages/contact3.jpg";
 import AboutSection from "../ui/AboutSection";
 import AboutWorkshop from "../ui/AboutWorkshop";
 import WhyChooseUs from "../ui/WhyChooseUs";
