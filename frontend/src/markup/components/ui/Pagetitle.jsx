@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 function PageTitle({
   title,
@@ -10,7 +11,7 @@ function PageTitle({
 }) {
   return (
     <section className="video-section page-title">
-      {/* Background */}
+      {/* Background Image */}
       <div
         className="sec-bg"
         style={{
@@ -18,51 +19,95 @@ function PageTitle({
         }}
       ></div>
 
+      {/* Dark Overlay */}
+      <div className="overlay"></div>
+
       <div className="auto-container">
         {/* Small Heading */}
-        {smallText && <h5>{smallText}</h5>}
+        {smallText && (
+          <motion.h5
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            {smallText}
+          </motion.h5>
+        )}
 
         {/* Main Title */}
-        <h2>
+        <motion.h2
+          initial={{ opacity: 0, y: 80 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
           {title}
+
           {subtitle && (
             <>
               <br />
               {subtitle}
             </>
           )}
-        </h2>
+        </motion.h2>
 
         {/* Breadcrumb */}
-        <ul className="page-breadcrumb">
+        <motion.ul
+          className="page-breadcrumb"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
           <li>
             <a href="/">Home</a>
           </li>
-          <li>{breadcrumb || title}</li>
-        </ul>
 
-        {/* Optional Video */}
+          <li>{breadcrumb || title}</li>
+        </motion.ul>
+
+        {/* Video Button */}
         {showVideo && (
-          <div className="video-box">
-            <div className="video-btn">
+          <motion.div
+            className="video-box"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{
+              delay: 0.8,
+              type: "spring",
+              stiffness: 120,
+            }}
+          >
+            <motion.div
+              className="video-btn"
+              whileHover={{
+                scale: 1.1,
+              }}
+            >
               <a
                 href="https://www.youtube.com/watch?v=HQ0_x9nXsbU"
-                className="overlay-link lightbox-image video-fancybox ripple"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="overlay-link"
               >
                 <i className="flaticon-play"></i>
               </a>
-            </div>
+            </motion.div>
 
             <div className="text">
               Watch intro video <br />
               about us
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
 
-      {/* Background Text */}
-      <h1>{title}</h1>
+      {/* Background Big Text */}
+      <motion.h1
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.08 }}
+        transition={{ delay: 1 }}
+      >
+        {title}
+      </motion.h1>
     </section>
   );
 }
