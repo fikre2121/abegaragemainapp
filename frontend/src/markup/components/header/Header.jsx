@@ -116,7 +116,7 @@ function Header() {
                     </div>
                   </nav>
                 </div>
-
+                <div class="search-btn"></div>
                 <div className="link-btn">
                   <a href="/login" className="theme-btn btn-style-one">
                     Login
@@ -154,7 +154,7 @@ function Header() {
                       className="main-menu navbar-expand-md navbar-light"
                     ></nav>
                   </div>
-
+                  <div class="search-btn"></div>
                   <div className="link-btn">
                     <a href="/login" className="theme-btn btn-style-one">
                       Login

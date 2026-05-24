@@ -1,8 +1,8 @@
 import React from "react";
-import Addcustomer from "../../../components/Addcustomer/Addcustomer";
+import Customers from "../../../components/customer/Customers";
 import Adminmenu from "../../../components/adminmenu/Adminmenu";
 
-function Addcustomerp() {
+function Customersp() {
   return (
     <div className="admin-layout">
       {/* Sidebar */}
@@ -13,11 +13,11 @@ function Addcustomerp() {
       {/* Main Content */}
       <div className="admin-content">
         <div className="container-fluid py-4">
-          <Addcustomer />
+          <Customers />
         </div>
       </div>
     </div>
   );
 }
 
-export default Addcustomerp;
+export default Customersp;
