@@ -4,17 +4,26 @@ import Adminmenu from "../../../components/adminmenu/Adminmenu";
 
 function Employeesp() {
   return (
-    <div className="admin-layout">
+    <div style={{ display: "flex", minHeight: "100vh", background: "#f8fafc" }}>
       {/* Sidebar */}
-      <div className="admin-sidebar">
+      <div
+        style={{
+          width: 240,
+          flexShrink: 0,
+          background: "#fff",
+          borderRight: "1px solid #e2e8f0",
+          position: "sticky",
+          top: 0,
+          height: "100vh",
+          overflowY: "auto",
+        }}
+      >
         <Adminmenu />
       </div>
 
       {/* Main Content */}
-      <div className="admin-content">
-        <div className="container-fluid py-4">
-          <Employees />
-        </div>
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <Employees />
       </div>
     </div>
   );
