@@ -24,6 +24,7 @@ import CustomerEdditP from "./markup/pages/admin/customerp/CustomerEdditp";
 import CustomerProfileP from "./markup/pages/admin/customerp/CustomerProfilep";
 import Customersp from "./markup/pages/admin/customerp/Customersp";
 import EmployEdditp from "./markup/pages/admin/employee/EmployEdditp";
+import Employeesp from "./markup/pages/admin/employee/Employeesp";
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
         <Route path="/admin/customers" element={<Customersp />} />
         <Route path="/admin/add-employee" element={<Addemployee />} />
         <Route path="/admin/eddit-employee" element={<EmployEdditp />} />
+        <Route path="/admin/employees" element={<Employeesp />} />
 
         <Route path="/admin/add-vehicle" element={<AddVehicle />} />
         <Route path="/admin/" element={<Adminpage />} />
