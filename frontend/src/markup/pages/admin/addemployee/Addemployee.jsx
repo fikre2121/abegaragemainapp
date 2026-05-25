@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
-import Addemployform from "../../../components/addemployeeform/Addemployform";
+import Addemployform from "../../../components/employee/Addemployform";
 import Adminmenu from "../../../components/adminmenu/Adminmenu";
 
 function Addemployee() {

@@ -23,6 +23,8 @@ import ContactUS from "./markup/pages/contactus/ContactUs";
 import CustomerEdditP from "./markup/pages/admin/customerp/CustomerEdditp";
 import CustomerProfileP from "./markup/pages/admin/customerp/CustomerProfilep";
 import Customersp from "./markup/pages/admin/customerp/Customersp";
+import EmployEdditp from "./markup/pages/admin/employee/EmployEdditp";
+
 
 function App() {
   return (
@@ -33,13 +35,14 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Service />} />
         <Route path="/contact" element={<ContactUS />} />
-
         <Route path="/login" element={<Login />} />
-        <Route path="/admin/add-employee" element={<Addemployee />} />
+        {/* addmin pages */}
         <Route path="/admin/add-customer" element={<Addcustomer />} />
         <Route path="/admin/customer-eddit" element={<CustomerEdditP />} />
         <Route path="/admin/customer-profile" element={<CustomerProfileP />} />
         <Route path="/admin/customers" element={<Customersp />} />
+        <Route path="/admin/add-employee" element={<Addemployee />} />
+        <Route path="/admin/eddit-employee" element={<EmployEdditp />} />
 
         <Route path="/admin/add-vehicle" element={<AddVehicle />} />
         <Route path="/admin/" element={<Adminpage />} />
