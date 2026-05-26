@@ -143,9 +143,6 @@ Form container
   margin-bottom: 25px;
 }
 
-
-
-
 /* Close Button */
 .close-form-btn {
   position: absolute;
@@ -167,4 +164,152 @@ Form container
 /* Hover effect */
 .close-form-btn:hover {
   background: #c1000c;
+}
+
+
+
+
+/* serviceManage.css */
+/* HEADER */
+
+
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.title-row h2,
+.title-row h3 {
+  font-size: 28px;
+  color: #0f1d48;
+  font-weight: 700;
+}
+
+.line {
+  width: 50px;
+  height: 2px;
+  background: #e61b23;
+  margin-top: 4px;
+}
+
+.service-header p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #7b7b7b;
+  max-width: 900px;
+}
+
+/* SERVICES BOX */
+
+.services-box {
+  background: #fff;
+  border: 1px solid #e3e3e3;
+}
+
+.service-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid #ececec;
+}
+
+.service-item:last-child {
+  border-bottom: none;
+}
+
+.service-text h4 {
+  font-size: 16px;
+  color: #0f1d48;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.service-text p {
+  font-size: 12px;
+  color: #7a7a7a;
+  line-height: 1.6;
+  max-width: 850px;
+}
+
+.service-icons {
+  display: flex;
+  gap: 12px;
+  min-width: 60px;
+}
+
+.edit-icon {
+  color: #0f1d48;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.delete-icon {
+  color: #e61b23;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+/* ADD SERVICE */
+
+.add-service-box {
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  margin-top: 25px;
+  padding: 30px;
+}
+
+.add-service-box form {
+  margin-top: 25px;
+}
+
+.add-service-box input,
+.add-service-box textarea {
+  width: 100%;
+  border: 1px solid #e3e3e3;
+  padding: 14px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  outline: none;
+}
+
+.add-service-box input:focus,
+.add-service-box textarea:focus {
+  border-color: #e61b23;
+}
+
+.add-service-box button {
+  background: #e61b23;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.add-service-box button:hover {
+  background: #c9151c;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .service-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .service-icons {
+    align-self: flex-end;
+  }
+
+  .title-row h2,
+  .title-row h3 {
+    font-size: 22px;
+  }
 }
