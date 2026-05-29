@@ -17,7 +17,7 @@ const FeaturesSection = () => {
                 manner. We are an individual from Professional Auto Service, a
                 first class execution arrange, where free assistance offices
                 share shared objectives of being world-class car administration
-                focuses.
+                focuses.... till the end f the follwo till the end of the followoing happening till the end of
               </div>
             </div>
           </div>
