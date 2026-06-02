@@ -74,7 +74,7 @@ function Addemployform() {
                           type="submit"
                           data-loading-text="Please wait..."
                         >
-                          <span>ADD Customer</span>
+                          <span>ADD Employee</span>
                         </button>
                       </div>
                     </div>
