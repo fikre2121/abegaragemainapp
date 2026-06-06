@@ -1,14 +1,12 @@
-// ServiceManage.jsx
+import React, { useState } from "react";
+import { FiEdit2, FiTrash2, FiCheck, FiX } from "react-icons/fi";
 
-import React from "react";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
-
-const services = [
+const initialServices = [
   {
     id: 1,
     title: "Oil change",
     description:
-      "Every 3000 kilometers or so, you need to change the oil in your car to keep your engine in the best possible shape",
+      "Every 3000 kilometers or so, you need to change the oil in your car to keep your engine in the best possible shape.",
   },
   {
     id: 2,
@@ -55,14 +53,60 @@ const services = [
 ];
 
 const ServiceManage = () => {
+  const [services, setServices] = useState(initialServices);
+  const [editingId, setEditingId] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [nextId, setNextId] = useState(9);
+
+  // --- Add ---
+  const handleAdd = () => {
+    if (!newTitle.trim() || !newDesc.trim()) return;
+    setServices([
+      ...services,
+      { id: nextId, title: newTitle.trim(), description: newDesc.trim() },
+    ]);
+    setNextId(nextId + 1);
+    setNewTitle("");
+    setNewDesc("");
+  };
+
+  // --- Edit ---
+  const startEdit = (service) => {
+    setEditingId(service.id);
+    setEditTitle(service.title);
+    setEditDesc(service.description);
+  };
+
+  const saveEdit = () => {
+    if (!editTitle.trim()) return;
+    setServices(
+      services.map((s) =>
+        s.id === editingId
+          ? { ...s, title: editTitle.trim(), description: editDesc.trim() }
+          : s,
+      ),
+    );
+    setEditingId(null);
+  };
+
+  const cancelEdit = () => setEditingId(null);
+
+  // --- Delete ---
+  const handleDelete = (id) => {
+    setServices(services.filter((s) => s.id !== id));
+  };
+
   return (
     <section className="services-section">
       <div className="auto-container">
         {/* TOP TITLE */}
         <div className="service-header">
-          <div class="sec-title style-two">
+          <div className="sec-title style-two">
             <h2>Our Services</h2>
-            <div class="text">
+            <div className="text">
               Bring to the table win-win survival strategies to ensure proactive
               domination. At the end of the day, going forward, a new normal
               that has evolved from generation X is on the runway heading
@@ -75,15 +119,49 @@ const ServiceManage = () => {
         <div className="services-box">
           {services.map((service) => (
             <div className="service-item" key={service.id}>
-              <div className="service-text">
-                <h4>{service.title}</h4>
-                <p>{service.description}</p>
-              </div>
-
-              <div className="service-icons">
-                <FiEdit2 className="edit-icon" />
-                <FiTrash2 className="delete-icon" />
-              </div>
+              {editingId === service.id ? (
+                /* EDIT MODE */
+                <div className="service-edit-form">
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    placeholder="Service name"
+                  />
+                  <textarea
+                    value={editDesc}
+                    onChange={(e) => setEditDesc(e.target.value)}
+                    placeholder="Service description"
+                    rows="3"
+                  />
+                  <div className="edit-actions">
+                    <button className="save-btn" onClick={saveEdit}>
+                      <FiCheck /> Save
+                    </button>
+                    <button className="cancel-btn" onClick={cancelEdit}>
+                      <FiX /> Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* VIEW MODE */
+                <>
+                  <div className="service-text">
+                    <h4>{service.title}</h4>
+                    <p>{service.description}</p>
+                  </div>
+                  <div className="service-icons">
+                    <FiEdit2
+                      className="edit-icon"
+                      onClick={() => startEdit(service)}
+                    />
+                    <FiTrash2
+                      className="delete-icon"
+                      onClick={() => handleDelete(service.id)}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -95,13 +173,21 @@ const ServiceManage = () => {
             <span className="line"></span>
           </div>
 
-          <form>
-            <input type="text" placeholder="Service name" />
-
-            <textarea placeholder="Service description" rows="6"></textarea>
-
-            <button type="submit">ADD SERVICE</button>
-          </form>
+          <div>
+            <input
+              type="text"
+              placeholder="Service name"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+            />
+            <textarea
+              placeholder="Service description"
+              rows="6"
+              value={newDesc}
+              onChange={(e) => setNewDesc(e.target.value)}
+            />
+            <button onClick={handleAdd}>ADD SERVICE</button>
+          </div>
         </div>
       </div>
     </section>
