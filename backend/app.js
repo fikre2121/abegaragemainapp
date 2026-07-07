@@ -1,12 +1,13 @@
-require("dotenv").config();
 
 // Import Core Dependencies
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import http from "http";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Import database connection
-const dbconnection = require("./config/db.config");
-
+import pool from "./config/db.config.js"
 // Initialize Express App
 const app = express();
 
@@ -18,19 +19,23 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // routs
-const installRoutes = require("../backend/routs/install.routes");
+import installRoutes from "./routs/install.routes.js";
+import employeeRoutes from "./routs/employee.routes.js";
+import authRoutes from "./routs/auth.routes.js";
+
 // middlwares
 app.use("/", installRoutes);
-
+app.use("/api", employeeRoutes);
+app.use("/api/auth", authRoutes);
 // Start server only if DB connect
 async function start() {
   try {
     // Test database connection
-    await dbconnection.execute("SELECT 1");
+    await pool.execute("SELECT 1");
     console.log("✅ Database connected successfully");
 
     // Optional: Show all tables in the database
-    const [tables] = await dbconnection.execute("SHOW TABLES");
+    const [tables] = await pool.execute("SHOW TABLES");
     console.log("📋 Tables are created in database:");
 
     // Start server

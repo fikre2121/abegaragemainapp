@@ -1,9 +1,8 @@
+import express from "express";
+import { install } from "../controllers/install.controller.js";
 
-
-const express = require("express");
 const router = express.Router();
-const { install } = require("../controllers/install.controller");
 
 router.post("/install", install);
 
-module.exports = router;
+export default router;

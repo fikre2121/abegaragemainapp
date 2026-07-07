@@ -1,5 +1,4 @@
-const db = require("../config/db.config");
-
+import db from "../config/db.config.js";
 const installDatabase = async () => {
   const connection = await db.getConnection();
 
@@ -140,4 +139,4 @@ const installDatabase = async () => {
   }
 };
 
-module.exports = { installDatabase };
+export { installDatabase };

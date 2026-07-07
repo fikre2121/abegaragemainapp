@@ -1,5 +1,7 @@
 // config/db.js
-const mysql = require("mysql2/promise");
+
+import "dotenv/config";
+import mysql from "mysql2/promise";
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -14,7 +16,9 @@ const pool = mysql.createPool({
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
+
     console.log("Connected to MySQL");
+
     connection.release();
   } catch (error) {
     console.error("Database connection failed:", error.message);
@@ -23,4 +27,4 @@ async function testConnection() {
 
 testConnection();
 
-module.exports = pool;
+export default pool;
