@@ -6,11 +6,12 @@ import { loginEmployee } from "../services/auth.service.js";
  * @param {Object} res - Express response object
  */
 export const login = async (req, res) => {
+
   try {
-    const { email, password } = req.body;
+    const { employee_email, employee_password } = req.body;
 
     // 1. Fail-fast validation (Prevents wasting database resources)
-    if (!email || !password) {
+    if (!employee_email || !employee_password) {
       return res.status(400).json({
         success: false,
         message: "Email and password are required.",
@@ -18,7 +19,7 @@ export const login = async (req, res) => {
     }
 
     // 2. Call service layer logic
-    const result = await loginEmployee(email, password);
+    const result = await loginEmployee(employee_email, employee_password);
 
     // 3. Return structured success response
     return res.status(200).json({

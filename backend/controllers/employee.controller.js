@@ -1,7 +1,9 @@
 import { createEmployee } from "../services/employee.service.js";
 
 export const addEmployee = async (req, res) => {
+
   try {
+
     const employee = await createEmployee(req.body);
 
     res.status(201).json({
