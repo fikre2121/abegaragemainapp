@@ -8,6 +8,6 @@ import { allowRoles } from "../middlwares/role.middleware.js";
 
 const router = express.Router();
 
-router.post("/employees", verifyToken,allowRoles("Admin"), addEmployee);
+router.post("/employees", addEmployee);
 
 export default router;
