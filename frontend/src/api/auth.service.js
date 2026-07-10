@@ -11,6 +11,6 @@ export const loginRequest = async (credentials) => {
 /**
  * Optional example: Fetches protected profile details
  */
-export const addEmployee = async () => {
-  return apiClient.get("/employees");
+export const addEmployee = async (employeeData) => {
+  return apiClient.post("/employees", employeeData);
 };
