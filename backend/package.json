@@ -1,17 +1,19 @@
 {
   "name": "abegaragemainapp",
-  "type": "module",
   "version": "1.0.0",
-  "description": "main Garage App",
+  "description": "Main Garage Management Application Backend",
+  "type": "module",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fikre2121/abegaragemainapp.git"
   },
-  "author": "fikre",
+  "author": "Fikre",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/fikre2121/abegaragemainapp/issues"
@@ -23,7 +25,9 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "mysql2": "^3.18.2",
+    "mysql2": "^3.18.2"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.14"
   }
 }
