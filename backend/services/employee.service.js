@@ -88,3 +88,57 @@ export const createEmployee = async (employeeData) => {
     connection.release();
   }
 };
+// get All employees
+export const getAllEmployees = async ({ page = 1, limit = 50 } = {}) => {
+  // 1. Enforce strict numerical bounds to eliminate memory overflow risks
+  const sanitizedLimit = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 100);
+  const sanitizedPage = Math.max(parseInt(page, 10) || 1, 1);
+  const offset = (sanitizedPage - 1) * sanitizedLimit;
+
+  try {
+    // 2. Compute total row records dynamically to support dashboard page layouts
+    const [countRows] = await db.query(
+      "SELECT COUNT(*) AS total FROM employee",
+    );
+    const totalRecords = countRows[0]?.total || 0;
+
+    // 3. Utilize LEFT JOIN so master records render even if subprofile tables are missing rows
+    const [employees] = await db.query(
+      `SELECT 
+        e.employee_id,
+        e.employee_email,
+        e.active_employee,
+        e.added_date,
+        ei.employee_first_name,
+        ei.employee_last_name,
+        ei.employee_phone
+      FROM employee e
+      LEFT JOIN employee_info ei ON e.employee_id = ei.employee_id
+      ORDER BY e.employee_id DESC
+      LIMIT ? OFFSET ?`,
+      [sanitizedLimit, offset],
+    );
+
+    // 4. Return structural dashboard-ready payload metadata
+    return {
+      employees,
+      pagination: {
+        total_records: totalRecords,
+        current_page: sanitizedPage,
+        per_page: sanitizedLimit,
+        total_pages: Math.ceil(totalRecords / sanitizedLimit),
+      },
+    };
+  } catch (error) {
+    // Securely record raw system error strings internally for administrators
+    console.error(
+      "Database lookup failure inside getAllEmployees:",
+      error.message,
+    );
+
+    // Abstract the error text to prevent system signature leakage down to client ports
+    throw new Error(
+      "Unable to retrieve employee registry profiles. Please try again.",
+    );
+  }
+};
