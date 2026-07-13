@@ -14,3 +14,7 @@ export const loginRequest = async (credentials) => {
 export const addEmployee = async (employeeData) => {
   return apiClient.post("/employees", employeeData);
 };
+// Fetches the protected paginated employee list
+export const getAllEmployees = async ({ page = 1, limit = 10 } = {}) => {
+  return apiClient.get(`/employees?page=${page}&limit=${limit}`);
+};
