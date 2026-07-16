@@ -142,3 +142,66 @@ export const getAllEmployees = async ({ page = 1, limit = 50 } = {}) => {
     );
   }
 };
+
+/**
+ * Retrieves a single employee profile with detailed relational tables by ID.
+ * @param {number|string} employeeId - Unique identifier for target employee record.
+ * @returns {Promise<Object>} Cleanly mapped single employee profile record object.
+ * @throws {Error} Relays custom abstracted system or not found exceptions.
+ */
+export const getEmployeeById = async (employeeId) => {
+  // 1. Guard Clause: Enforce explicit numerical boundary type validation upfront
+  const sanitizedId = parseInt(employeeId, 10);
+  if (Number.isNaN(sanitizedId) || sanitizedId <= 0) {
+    throw new Error("Invalid employee ID configuration provided.");
+  }
+
+  try {
+    // 2. Query execution pulling specific profile columns AND role mappings cleanly
+    const [employees] = await db.query(
+      `SELECT 
+        e.employee_id, 
+        e.employee_email, 
+        e.active_employee, 
+        e.added_date, 
+        ei.employee_first_name, 
+        ei.employee_last_name, 
+        ei.employee_phone,
+        cr.company_role_id,
+        cr.company_role_name
+      FROM employee e 
+      LEFT JOIN employee_info ei ON e.employee_id = ei.employee_id 
+      LEFT JOIN employee_role er ON e.employee_id = er.employee_id
+      LEFT JOIN company_roles cr ON er.company_role_id = cr.company_role_id
+      WHERE e.employee_id = ? 
+      LIMIT 1`,
+      [sanitizedId],
+    );
+
+    // 3. Return not found error context explicitly if array bounds are empty
+    if (!employees || employees.length === 0) {
+      throw new Error("EMPLOYEE_NOT_FOUND");
+    }
+
+    // 4. Return the single record element
+    return employees[0];
+  } catch (error) {
+    // Log the true detailed system signature securely to internal application terminal monitors
+    console.error(
+      `[Service Error] getEmployeeById failure on ID ${sanitizedId}:`,
+      error.message,
+    );
+
+    // If it's a known business logic validation exception, rethrow it verbatim for the controller
+    if (error.message === "EMPLOYEE_NOT_FOUND") {
+      throw new Error(
+        "The requested employee profile does not exist or has been deleted.",
+      );
+    }
+
+    // Shield your database schema: Abstract raw system/SQL bugs into a secure fallback message
+    throw new Error(
+      "Failed to retrieve employee profile specifications. Please try again later.",
+    );
+  }
+};
