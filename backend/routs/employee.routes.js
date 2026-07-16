@@ -1,6 +1,6 @@
 import express from "express";
 
-import { addEmployee,getEmployees,getEmployee } from "../controllers/employee.controller.js";
+import { addEmployee,getEmployees,getEmployee,editEmployee } from "../controllers/employee.controller.js";
 
 import { verifyToken } from "../middlwares/auth.middleware.js";
 
@@ -13,7 +13,7 @@ router.post("/employees", addEmployee);
 router.get("/employees",getEmployees);
 // to get the singel employee
 router.get("/employees/:id", getEmployee);
-
-
+// eddit employee
+router.put("/employees/:id", editEmployee);
 
 export default router;

@@ -142,13 +142,7 @@ export const getAllEmployees = async ({ page = 1, limit = 50 } = {}) => {
     );
   }
 };
-
-/**
- * Retrieves a single employee profile with detailed relational tables by ID.
- * @param {number|string} employeeId - Unique identifier for target employee record.
- * @returns {Promise<Object>} Cleanly mapped single employee profile record object.
- * @throws {Error} Relays custom abstracted system or not found exceptions.
- */
+// get seingle employee
 export const getEmployeeById = async (employeeId) => {
   // 1. Guard Clause: Enforce explicit numerical boundary type validation upfront
   const sanitizedId = parseInt(employeeId, 10);
@@ -203,5 +197,108 @@ export const getEmployeeById = async (employeeId) => {
     throw new Error(
       "Failed to retrieve employee profile specifications. Please try again later.",
     );
+  }
+};
+
+
+// to eddit the employee
+export const updateEmployee = async (employeeId, employeeData) => {
+  // 1. Guard Clause: Enforce strict numerical validation boundaries
+  const sanitizedId = parseInt(employeeId, 10);
+  if (Number.isNaN(sanitizedId) || sanitizedId <= 0) {
+    throw new Error("INVALID_EMPLOYEE_ID");
+  }
+
+  // Request a clean dedicated database client connection state from the pool
+  const connection = await db.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    // 2. Fetch current active data rows safely INSIDE the active transaction block
+    const [currentRows] = await connection.query(
+      `SELECT e.active_employee, ei.employee_first_name, ei.employee_last_name, ei.employee_phone, er.company_role_id
+       FROM employee e
+       LEFT JOIN employee_info ei ON e.employee_id = ei.employee_id
+       LEFT JOIN employee_role er ON e.employee_id = er.employee_id
+       WHERE e.employee_id = ? LIMIT 1 FOR UPDATE`, // 'FOR UPDATE' locks the row safely during multi-user modifications
+      [sanitizedId],
+    );
+
+    if (!currentRows || currentRows.length === 0) {
+      throw new Error("EMPLOYEE_NOT_FOUND");
+    }
+
+    const currentData = currentRows[0];
+
+    // 3. Null-Safe Coalesce Patching: Fallback to existing data if frontend updates omit optional fields
+    const active_employee =
+      employeeData.active_employee !== undefined
+        ? employeeData.active_employee
+        : currentData.active_employee;
+    const employee_first_name =
+      employeeData.employee_first_name !== undefined
+        ? employeeData.employee_first_name
+        : currentData.employee_first_name;
+    const employee_last_name =
+      employeeData.employee_last_name !== undefined
+        ? employeeData.employee_last_name
+        : currentData.employee_last_name;
+    const employee_phone =
+      employeeData.employee_phone !== undefined
+        ? employeeData.employee_phone
+        : currentData.employee_phone;
+    const company_role_id =
+      employeeData.company_role_id !== undefined
+        ? employeeData.company_role_id
+        : currentData.company_role_id;
+
+    // 4. Execution Step A: Modify core employee row table parameters
+    await connection.query(
+      "UPDATE employee SET active_employee = ? WHERE employee_id = ?",
+      [active_employee, sanitizedId],
+    );
+
+    // 5. Execution Step B: Modify metadata profile records safely
+    await connection.query(
+      `UPDATE employee_info 
+       SET employee_first_name = ?, employee_last_name = ?, employee_phone = ? 
+       WHERE employee_id = ?`,
+      [employee_first_name, employee_last_name, employee_phone, sanitizedId],
+    );
+
+    // 6. Execution Step C: Dynamically patch or insert role assignments
+    if (company_role_id) {
+      await connection.query(
+        `INSERT INTO employee_role (employee_id, company_role_id) 
+         VALUES (?, ?) 
+         ON DUPLICATE KEY UPDATE company_role_id = ?`,
+        [sanitizedId, company_role_id, company_role_id],
+      );
+    }
+
+    // Secure database updates permanently
+    await connection.commit();
+    return { employee_id: sanitizedId };
+  } catch (error) {
+    // Safely undo database alterations to maintain ecosystem integrity on unexpected system network crashes
+    await connection.rollback();
+    console.error(
+      `[Service Error] updateEmployee failure on ID ${sanitizedId}:`,
+      error.message,
+    );
+
+    if (
+      error.message === "EMPLOYEE_NOT_FOUND" ||
+      error.message === "INVALID_EMPLOYEE_ID"
+    ) {
+      throw error;
+    }
+    throw new Error(
+      "Internal transaction failure. Unable to update employee records.",
+    );
+  } finally {
+    // Always release client resources back to the server pool to avoid application performance deadlocks
+    connection.release();
   }
 };
