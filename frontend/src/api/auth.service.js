@@ -18,3 +18,13 @@ export const addEmployee = async (employeeData) => {
 export const getAllEmployees = async ({ page = 1, limit = 10 } = {}) => {
   return apiClient.get(`/employees?page=${page}&limit=${limit}`);
 };
+
+// get singele employee
+
+export const getSingleEmployee = async (employeeId) => {
+  return apiClient.get(`/employees/${employeeId}`);
+};
+// eddit empoyeee
+export const updateEmployee = async (employeeId, updatedData) => {
+  return apiClient.put(`/employees/${employeeId}`, updatedData);
+};
