@@ -8,6 +8,10 @@ export const loginRequest = async (credentials) => {
   return apiClient.post("/auth/login", credentials);
 };
 
+// me endpoint
+export const getCurrentEmployee = async () => {
+  return apiClient.get("/auth/me");
+};
 /**
  * Optional example: Fetches protected profile details
  */
