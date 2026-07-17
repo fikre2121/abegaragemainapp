@@ -1,4 +1,5 @@
-import { loginEmployee } from "../services/auth.service.js";
+import { loginEmployee} from "../services/auth.service.js";
+import { getEmployeeById } from "../services/employee.service.js";
 
 /**
  * Express controller to handle employee login.
@@ -6,7 +7,6 @@ import { loginEmployee } from "../services/auth.service.js";
  * @param {Object} res - Express response object
  */
 export const login = async (req, res) => {
-
   try {
     const { employee_email, employee_password } = req.body;
 
@@ -46,6 +46,27 @@ export const login = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "An unexpected internal server error occurred.",
+    });
+  }
+};
+
+export const getCurrentEmployee = async (req, res) => {
+  try {
+    // Added by verifyToken middleware
+    const employeeId = req.user.employee_id;
+
+    const employee = await getEmployeeById(employeeId);
+
+    return res.status(200).json({
+      success: true,
+      data: employee,
+    });
+  } catch (error) {
+    console.error("[Controller Error] getCurrentEmployee:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to retrieve authenticated employee profile.",
     });
   }
 };
