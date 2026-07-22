@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem("user", JSON.stringify(employee));
 
-      toast.success(`Welcome ${employee.employee_first_name}`);
+      toast.success("Login successful!");
 
       return employee;
     } catch (error) {

@@ -1,60 +1,84 @@
-import db from '../config/db.config.js'; 
-import bcrypt from 'bcrypt'; 
-import { generateToken } from '../utils/jwt.js'; 
+import db from "../config/db.config.js";
+import bcrypt from "bcrypt";
+import { generateToken } from "../utils/jwt.js";
 
 /**
- * Authenticates an employee and returns a JWT token.
- * @param {string} email 
- * @param {string} password 
- * @returns {Promise<Object>} Token and basic employee details
+ * Authenticate an employee and generate a JWT.
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<Object>}
  */
 export const loginEmployee = async (email, password) => {
   try {
-    // 1. Fetch employee status and ID
-    const [employees] = await db.query(
-      'SELECT employee_id, employee_email, active_employee FROM employee WHERE employee_email = ?', 
-      [email]
+    // 1. Retrieve employee, password hash and role in a single query
+    const [rows] = await db.query(
+      `SELECT
+          e.employee_id,
+          e.employee_email,
+          e.active_employee,
+          ep.employee_password_hashed,
+          ei.employee_first_name,
+          ei.employee_last_name,
+          ei.employee_phone,
+          cr.company_role_id,
+          cr.company_role_name
+       FROM employee e
+       INNER JOIN employee_pass ep
+            ON e.employee_id = ep.employee_id
+       LEFT JOIN employee_info ei
+            ON e.employee_id = ei.employee_id
+       LEFT JOIN employee_role er
+            ON e.employee_id = er.employee_id
+       LEFT JOIN company_roles cr
+            ON er.company_role_id = cr.company_role_id
+       WHERE e.employee_email = ?
+       LIMIT 1`,
+      [email],
     );
 
-    // Generic error message prevents user enumeration attacks
-    if (employees.length === 0 || employees[0].active_employee !== 1) {
-      throw new Error('Invalid email or password');
+    // 2. Check whether the account exists
+    if (rows.length === 0) {
+      throw new Error("INVALID_CREDENTIALS");
     }
 
-    const employee = employees[0];
+    const employee = rows[0];
 
-    // 2. Fetch the hashed password safely
-    const [passwordRows] = await db.query(
-      'SELECT employee_password_hashed FROM employee_pass WHERE employee_id = ?', 
-      [employee.employee_id]
-    );
-
-    if (passwordRows.length === 0) {
-      throw new Error('Invalid email or password');
+    // 3. Check whether the account is active
+    if (employee.active_employee !== 1) {
+      throw new Error("ACCOUNT_INACTIVE");
     }
 
-    // 3. Verify password
+    // 4. Verify password
     const passwordMatch = await bcrypt.compare(
-      password, 
-      passwordRows[0].employee_password_hashed
+      password,
+      employee.employee_password_hashed,
     );
 
     if (!passwordMatch) {
-      throw new Error('Invalid email or password');
+      throw new Error("INVALID_CREDENTIALS");
     }
 
-    // 4. Generate token and return data
+    // 5. Generate JWT
     const token = generateToken(employee);
 
-    return { 
-      token, 
-      employee_id: employee.employee_id, 
-      email: employee.employee_email 
-    };
+    // 6. Never expose password hashes
+    delete employee.employee_password_hashed;
 
+    // 7. Return authentication payload
+    return {
+      token,
+      employee,
+    };
   } catch (error) {
-    // Log the actual error internally for debugging, rethrow a clean message for the user
-    console.error(`Login failed for ${email}:`, error.message);
-    throw new Error(error.message || 'Authentication failed');
+    console.error("[Auth Service] Login failed:", error.message);
+
+    if (
+      error.message === "INVALID_CREDENTIALS" ||
+      error.message === "ACCOUNT_INACTIVE"
+    ) {
+      throw error;
+    }
+
+    throw new Error("LOGIN_FAILED");
   }
 };

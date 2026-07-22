@@ -1,43 +1,61 @@
 /**
- * Express middleware to restrict route access by role.
- * Requires 'verifyToken' middleware to run before this.
- * @param {...string} allowedRoles - List of roles permitted to access the route.
+ * Middleware factory for role-based authorization.
+ * Must run after verifyToken middleware.
+ *
+ * Example:
+ * router.post(
+ *   "/employees",
+ *   verifyToken,
+ *   allowRoles("Admin", "Manager"),
+ *   addEmployee
+ * );
  */
+
 export const allowRoles = (...allowedRoles) => {
   return (req, res, next) => {
-    // 1. Guard Clause: Ensure user payload exists from verifyToken middleware
-    if (!req.user) {
-      console.error(
-        "Authorization Error: allowRoles called before verifyToken middleware.",
+    try {
+      // 1. Ensure authentication middleware executed first
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: "Authentication required.",
+        });
+      }
+
+      // 2. Extract role from verified JWT
+      const userRole = req.user.role;
+
+      if (!userRole) {
+        return res.status(403).json({
+          success: false,
+          message: "User role is not assigned.",
+        });
+      }
+
+      // 3. Normalize role names
+      const normalizedUserRole = userRole.toLowerCase();
+
+      const normalizedAllowedRoles = allowedRoles.map((role) =>
+        role.toLowerCase(),
       );
+
+      // 4. Check permission
+      if (!normalizedAllowedRoles.includes(normalizedUserRole)) {
+        return res.status(403).json({
+          success: false,
+          message: "You do not have permission to access this resource.",
+        });
+      }
+
+      // 5. Continue request
+      next();
+    } catch (error) {
+      console.error("[Role Middleware Error]", error.message);
+
       return res.status(500).json({
         success: false,
-        message: "An internal security error occurred.",
+        message: "Authorization service error.",
       });
     }
-
-    // 2. Extract role directly from the stateless JWT payload (No DB hit!)
-    const userRole = req.user.role;
-
-    if (!userRole) {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied. No user role assigned.",
-      });
-    }
-
-    // 3. Check if the user's role matches any of the permitted roles
-    const hasPermission = allowedRoles.includes(userRole);
-
-    if (!hasPermission) {
-      return res.status(403).json({
-        success: false,
-        message:
-          "Access denied. You do not have permission to view this resource.",
-      });
-    }
-
-    // 4. Authorized - proceed safely
-    return next();
   };
 };

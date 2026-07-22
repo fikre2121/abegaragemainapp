@@ -10,43 +10,45 @@ export const login = async (req, res) => {
   try {
     const { employee_email, employee_password } = req.body;
 
-    // 1. Fail-fast validation (Prevents wasting database resources)
+    // Validate request
     if (!employee_email || !employee_password) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required.",
+        message: "Employee email and password are required.",
       });
     }
 
-    // 2. Call service layer logic
+    // Authenticate user
     const result = await loginEmployee(employee_email, employee_password);
 
-    // 3. Return structured success response
     return res.status(200).json({
       success: true,
       message: "Login successful.",
       data: result,
     });
   } catch (error) {
-    // 4. Log the full error internally for system administrators
-    console.error("Login Controller Error:", error);
+    console.error("[Login Controller]", error);
 
-    // 5. Context-aware error status mapping
-    if (
-      error.message === "Invalid email or password" ||
-      error.message === "Account inactive"
-    ) {
-      return res.status(401).json({
-        success: false,
-        message: error.message,
-      });
+    switch (error.message) {
+      case "INVALID_CREDENTIALS":
+        return res.status(401).json({
+          success: false,
+          message: "Invalid email or password.",
+        });
+
+      case "ACCOUNT_INACTIVE":
+        return res.status(403).json({
+          success: false,
+          message:
+            "Your account has been deactivated. Please contact an administrator.",
+        });
+
+      default:
+        return res.status(500).json({
+          success: false,
+          message: "An unexpected server error occurred.",
+        });
     }
-
-    // 6. Generic fallback prevents internal system leakages on 500 errors
-    return res.status(500).json({
-      success: false,
-      message: "An unexpected internal server error occurred.",
-    });
   }
 };
 

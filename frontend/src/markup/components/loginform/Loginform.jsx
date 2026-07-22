@@ -1,11 +1,16 @@
 import React, { useState } from "react";
-import { loginRequest } from "../../../api/auth.service.js";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/ContextProvider";
+
 function Loginform() {
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -16,18 +21,17 @@ function Loginform() {
     setError("");
 
     try {
-      const response = await loginRequest({
+      await login({
         employee_email: email,
         employee_password: password,
       });
-
-      // because your axios interceptor returns response.data
-      localStorage.setItem("token", response.token);
-
-      toast.success("Login successful!");
       navigate("/admin/add-employee");
     } catch (error) {
-      toast.error(error.message);
+      console.error("Login error:", error);
+
+      toast.error(
+        error.response?.data?.message || "Login failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -45,7 +49,7 @@ function Loginform() {
             <div className="form-column col-lg-7">
               <div className="inner-column">
                 <div className="contact-form">
-                  <form onSubmit={handleLogin} id="contact-form">
+                  <form onSubmit={handleLogin}>
                     {error && <div className="alert alert-danger">{error}</div>}
 
                     <div className="row clearfix">

@@ -5,10 +5,11 @@ export const generateToken = (employee) => {
     {
       employee_id: employee.employee_id,
       email: employee.employee_email,
+      role: employee.company_role_name,
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "1d",
+      expiresIn: "24h",
     },
   );
 };
