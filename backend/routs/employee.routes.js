@@ -10,10 +10,10 @@ const router = express.Router();
 router.post("/employees", verifyToken, allowRoles(""), addEmployee);
 // 2. Fetch the paginated list of all employees
 // Access: Restricted to 'admin' and 'manager' roles only
-router.get("/employees",getEmployees);
+router.get("/employees",verifyToken,getEmployees);
 // to get the singel employee
 router.get("/employees/:id", getEmployee);
 // eddit employee
-router.put("/employees/:id", editEmployee);
+router.put("/employees/:id", verifyToken,allowRoles("Admin,Menager"), editEmployee);
 
 export default router;
