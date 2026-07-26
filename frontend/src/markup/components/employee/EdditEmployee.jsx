@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  getSingleEmployee,
-  updateEmployee,
-} from "../../../api/auth.service"; // Adjust path to your axios services file
+import { toast } from "react-toastify";
+
+import { getSingleEmployee, updateEmployee } from "../../../api/auth.service"; // Adjust path to your axios services file
 import { Loader2 } from "lucide-react";
 
 function EditEmployee() {
@@ -19,7 +18,7 @@ function EditEmployee() {
     active_employee: 1, // 1 for active, 0 for inactive
     employee_email: "", // Saved purely to display in the header text metadata
   });
-
+  const [originalData, setOriginalData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -34,14 +33,17 @@ function EditEmployee() {
         const emp = response?.data?.[0] || response?.data;
 
         if (emp) {
-          setFormData({
+          const employeeData = {
             employee_first_name: emp.employee_first_name || "",
             employee_last_name: emp.employee_last_name || "",
             employee_phone: emp.employee_phone || "",
             company_role_id: emp.company_role_id || 3,
             active_employee: emp.active_employee ?? 1,
             employee_email: emp.employee_email || "",
-          });
+          };
+
+          setFormData(employeeData);
+          setOriginalData(employeeData);
         }
       } catch (error) {
         console.error("Profile hydration cycle rejected:", error.message);
@@ -75,16 +77,49 @@ function EditEmployee() {
   // 5. Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (submitting) return;
+
+    // Check if anything changed
+    const hasChanges =
+      JSON.stringify(formData) !== JSON.stringify(originalData);
+
+    if (!hasChanges) {
+      toast.info("No changes detected.");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
-      // Execute transactional UPDATE against the backend controllers
-      await updateEmployee(id, formData);
-      navigate("/employees"); // Return cleanly back to your database list panel on success
+      // Validation
+      if (
+        !formData.employee_first_name.trim() ||
+        !formData.employee_last_name.trim() ||
+        !formData.employee_phone.trim()
+      ) {
+        toast.error("Please fill all required employee fields.");
+        return;
+      }
+
+      const response = await updateEmployee(id, formData);
+
+      console.log("Employee updated:", response.data);
+
+      toast.success("Employee updated successfully!");
+
+      setTimeout(() => {
+        navigate("/admin/employees");
+      }, 1000);
     } catch (error) {
       console.error(
-        "Transactional patch signature execution failed:",
-        error.message,
+        "Employee update failed:",
+        error.response?.data || error.message,
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to update employee. Please try again.",
       );
     } finally {
       setSubmitting(false);

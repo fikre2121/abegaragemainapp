@@ -62,19 +62,6 @@ function Header() {
           Contact Us
         </Link>
       </li>
-
-      {/* 🔐 Context Conditional Route: Render Dashboard link only if Admin or Manager logs in */}
-      {isAuthenticated && hasRole("admin", "manager") && (
-        <li>
-          <Link
-            to="/admin/employees"
-            onClick={closeMobileMenu}
-            className="text-primary font-weight-bold"
-          >
-            Dashboard
-          </Link>
-        </li>
-      )}
     </ul>
   );
 
@@ -83,21 +70,9 @@ function Header() {
     if (user) {
       return (
         <div className="d-flex align-items-center gap-3">
-          <span className="text-muted small d-none d-md-inline">
-            Hello,{" "}
-            <strong className="text-dark">
-              {user.employee_first_name || "Staff"}
-            </strong>
-            <span
-              className="badge bg-secondary ms-1 text-uppercase"
-              style={{ fontSize: "10px" }}
-            >
-              {user.company_role_name}
-            </span>
-          </span>
           <button
             onClick={handleLogoutClick}
-            className="theme-btn btn-style-one bg-danger border-0 text-white"
+            className="theme-btn btn-style-one bg-dark border-0 text-white"
           >
             Logout
           </button>
@@ -126,10 +101,17 @@ function Header() {
                 </div>
               </div>
               <div className="right-column">
-                <div className="phone-number">
-                  Schedule Your Appointment Today:{" "}
-                  <strong>1800 456 7890</strong>
-                </div>
+                {user ? (
+                  <span className="text-muted larg d-none d-md-inline ">
+                    Welcom,{" "}
+                    <strong className="">{user.company_role_name}</strong>
+                  </span>
+                ) : (
+                  <div className="phone-number">
+                    Schedule Your Appointment Today:{" "}
+                    <strong>1800 456 7890</strong>
+                  </div>
+                )}
               </div>
             </div>
           </div>
