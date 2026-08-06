@@ -10,18 +10,16 @@ const apiClient = axios.create({
 });
 
 // 2. Request Interceptor: Automatically inject your JWT Bearer token
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`; // Matches your backend authMiddleware!
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+
+  return config;
+});
 
 // 3. Response Interceptor: Catch global errors (like 401 unauthenticated or 500 server crashes)
 apiClient.interceptors.response.use(
@@ -32,11 +30,7 @@ apiClient.interceptors.response.use(
       error.response &&
       (error.response.status === 401 || error.response.status === 403)
     ) {
-      console.warn(
-        "Session expired or unauthorized. Clearing local credentials...",
-      );
-      localStorage.removeItem("token");
-      // Optional: window.location.href = '/login';
+      console.warn("Unauthorized request:", error.config.url);
     }
 
     // Extract cleanest possible error message from your server response payload
