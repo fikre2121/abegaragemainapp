@@ -1,20 +1,6 @@
-/**
- * Middleware factory for role-based authorization.
- * Must run after verifyToken middleware.
- *
- * Example:
- * router.post(
- *   "/employees",
- *   verifyToken,
- *   allowRoles("Admin", "Manager"),
- *   addEmployee
- * );
- */
-
 export const allowRoles = (...allowedRoles) => {
   return (req, res, next) => {
     try {
-      // 1. Ensure authentication middleware executed first
       if (!req.user) {
         return res.status(401).json({
           success: false,
@@ -22,7 +8,6 @@ export const allowRoles = (...allowedRoles) => {
         });
       }
 
-      // 2. Extract role from verified JWT
       const userRole = req.user.role;
 
       if (!userRole) {
@@ -32,14 +17,12 @@ export const allowRoles = (...allowedRoles) => {
         });
       }
 
-      // 3. Normalize role names
       const normalizedUserRole = userRole.toLowerCase();
 
       const normalizedAllowedRoles = allowedRoles.map((role) =>
         role.toLowerCase(),
       );
 
-      // 4. Check permission
       if (!normalizedAllowedRoles.includes(normalizedUserRole)) {
         return res.status(403).json({
           success: false,
@@ -47,7 +30,6 @@ export const allowRoles = (...allowedRoles) => {
         });
       }
 
-      // 5. Continue request
       next();
     } catch (error) {
       console.error("[Role Middleware Error]", error.message);

@@ -14,6 +14,11 @@ router.get("/employees",verifyToken,getEmployees);
 // to get the singel employee
 router.get("/employees/:id", getEmployee);
 // eddit employee
-router.put("/employees/:id", verifyToken,allowRoles("Admin,Menager"), editEmployee);
+router.put(
+  "/employees/:id",
+  verifyToken,
+  allowRoles("Admin", "Manager"),
+  editEmployee,
+);
 
 export default router;
