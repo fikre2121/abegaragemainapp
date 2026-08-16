@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllEmployees } from "../../../api/auth.service.js"; // Your professional API client file
 import { SquarePen, Trash2 } from "lucide-react"; // Custom lucide design overrides
+import { useNavigate } from "react-router-dom";
 
 function AllEmployeesPage() {
   const [employees, setEmployees] = useState([]);
@@ -12,7 +13,7 @@ function AllEmployeesPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const limit = 10;
-
+const navigate = useNavigate()
   // 1. Dynamic API Fetch Pipeline
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -41,8 +42,8 @@ function AllEmployeesPage() {
 
   // Operational click handlers
   const handleEdit = (id) => {
-    console.log("Edit employee ID:", id);
-  };
+navigate(`/admin/eddit-employee/${id}`)  
+};
 
   const handleDelete = (id) => {
     console.log("Delete employee ID:", id);

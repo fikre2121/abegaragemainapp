@@ -50,6 +50,7 @@ export const AuthProvider = ({ children }) => {
 
         // cache user for instant loading
         localStorage.setItem("user", JSON.stringify(employee));
+
       } catch (error) {
         console.error("Session restore failed:", error.message);
 

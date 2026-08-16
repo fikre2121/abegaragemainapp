@@ -1,103 +1,230 @@
-import React, { useState } from "react";
-import { FiEdit2, FiTrash2, FiCheck, FiX } from "react-icons/fi";
+import React, { useEffect, useState, useCallback } from "react";
+import { FiEdit2, FiTrash2, FiCheck, FiX, FiLoader } from "react-icons/fi";
+import { Trash2, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
-const initialServices = [
-  {
-    id: 1,
-    title: "Oil change",
-    description:
-      "Every 3000 kilometers or so, you need to change the oil in your car to keep your engine in the best possible shape.",
-  },
-  {
-    id: 2,
-    title: "Spark Plug replacement",
-    description:
-      "Spark plugs wear out and can cause huge problems. Their job is to ignite the fuel in your engine.",
-  },
-  {
-    id: 3,
-    title: "Full Car inspection",
-    description:
-      'Look over all car systems to make sure only the "check engine" light is on or comes on.',
-  },
-  {
-    id: 4,
-    title: "Oxygen Sensor replacement",
-    description:
-      "Oxygen sensors monitor the environment in engine in the exhaust gases to make performance and emissions.",
-  },
-  {
-    id: 5,
-    title: "Brake work",
-    description:
-      "We all know why brake work is important, especially because one portion of all Canadian car accidents are caused by a failure to stop.",
-  },
-  {
-    id: 6,
-    title: "Tire repairs and changes",
-    description:
-      "Well, repaired flat tires you lose speed, control, and fuel efficiency. Ignore the need to get them patched if there's a leak.",
-  },
-  {
-    id: 7,
-    title: "The Ignition System",
-    description:
-      "A car's ignition system includes its starter, battery, and the ignition itself.",
-  },
-  {
-    id: 8,
-    title: "Programming the camera software",
-    description:
-      "Well, repaired flat tires you lose speed, control, and fuel efficiency. Ignore the need to get them patched if there's a leak.",
-  },
-];
-
+import {
+  getAllServices,
+  addService,
+  updateService,
+  deleteService,
+} from "../../../api/auth.service";
+import ConfirmModal from "../common/ConfirmModal";
 const ServiceManage = () => {
-  const [services, setServices] = useState(initialServices);
+  // -----------------------------
+  // Services
+  // -----------------------------
+  const [services, setServices] = useState([]);
+
+  // -----------------------------
+  // Loading / error states
+  // -----------------------------
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // -----------------------------
+  // Edit state
+  // -----------------------------
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
+
+  // -----------------------------
+  // Add state
+  // -----------------------------
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
-  const [nextId, setNextId] = useState(9);
 
-  // --- Add ---
-  const handleAdd = () => {
-    if (!newTitle.trim() || !newDesc.trim()) return;
-    setServices([
-      ...services,
-      { id: nextId, title: newTitle.trim(), description: newDesc.trim() },
-    ]);
-    setNextId(nextId + 1);
-    setNewTitle("");
-    setNewDesc("");
+  // -----------------------------
+  // Action loading states
+  // -----------------------------
+  const [adding, setAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+const [serviceToDelete, setServiceToDelete] = useState(null);
+  // =========================================================
+  // GET ALL SERVICES
+  // =========================================================
+
+  const fetchServices = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await getAllServices();
+      /*
+       * Backend response shape:
+       * { success: true, data: [...] }
+       */
+      setServices(response?.data ?? []);
+    } catch (err) {
+      console.error("🔴Failed to fetch services:", err);
+      
+      setError(
+        err?.response?.data?.message ||
+          "Failed to load services. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // =========================================================
+  // LOAD SERVICES WHEN PAGE OPENS
+  // =========================================================
+
+  useEffect(() => {
+    fetchServices();
+  }, [fetchServices]);
+
+  // =========================================================
+  // ADD SERVICE
+  // =========================================================
+
+  const handleAdd = async () => {
+    const serviceName = newTitle.trim();
+    const serviceDescription = newDesc.trim();
+
+    if (!serviceName) {
+      return toast.error("Service name is requered");
+      return;
+    }
+
+    if (!serviceDescription) {
+      return toast.error("Service description is requers.");
+      return;
+    }
+
+    try {
+      setAdding(true);
+      setError("");
+
+      const response = await addService({
+        service_name: serviceName,
+        service_description: serviceDescription,
+      });
+      toast.success("Service created successfuly");
+
+      if (response?.success) {
+        setNewTitle("");
+        setNewDesc("");
+
+        await fetchServices();
+      } else {
+        setError(response?.message || "Failed to add service.");
+      }
+    } catch (err) {
+      console.error("ADD SERVICE ERROR:", err);
+      console.log("Response:", err?.response);
+      console.log("Response data:", err?.response?.data);
+      console.log("Status:", err?.response?.status);
+
+      setError(
+        err?.response?.data?.message ||
+          "Failed to add service. Please try again.",
+      );
+    } finally {
+      setAdding(false);
+    }
   };
 
-  // --- Edit ---
+  // =========================================================
+  // START / CANCEL EDIT
+  // =========================================================
+
   const startEdit = (service) => {
-    setEditingId(service.id);
-    setEditTitle(service.title);
-    setEditDesc(service.description);
+    setEditingId(service.service_id);
+    setEditTitle(service.service_name);
+    setEditDesc(service.service_description || "");
+    setError("");
   };
 
-  const saveEdit = () => {
-    if (!editTitle.trim()) return;
-    setServices(
-      services.map((s) =>
-        s.id === editingId
-          ? { ...s, title: editTitle.trim(), description: editDesc.trim() }
-          : s,
-      ),
-    );
+  const cancelEdit = () => {
     setEditingId(null);
+    setEditTitle("");
+    setEditDesc("");
+    setError("");
   };
 
-  const cancelEdit = () => setEditingId(null);
+  // =========================================================
+  // SAVE EDIT
+  // =========================================================
 
-  // --- Delete ---
-  const handleDelete = (id) => {
-    setServices(services.filter((s) => s.id !== id));
+  const saveEdit = async () => {
+    const serviceName = editTitle.trim();
+    const serviceDescription = editDesc.trim();
+
+    if (!serviceName) {
+      setError("Service name is required.");
+      return;
+    }
+
+    if (!serviceDescription) {
+      setError("Service description is required.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError("");
+
+      const response = await updateService({
+        service_id: editingId,
+        service_name: serviceName,
+        service_description: serviceDescription,
+      });
+
+      if (response?.data?.success) {
+        setEditingId(null);
+        setEditTitle("");
+        setEditDesc("");
+        await fetchServices();
+      } else {
+        setError(response?.data?.message || "Failed to update service.");
+      }
+    } catch (err) {
+      console.error("Failed to update service:", err);
+      setError(
+        err?.response?.data?.message ||
+          "Failed to update service. Please try again.",
+      );
+    } finally {
+      setSaving(false);
+    }
   };
+
+  // =========================================================
+  // DELETE / DEACTIVATE SERVICE
+  // =========================================================
+
+  const handleDelete = async (serviceId) => {
+    try {
+      setDeletingId(serviceId);
+      setError("");
+
+      const response = await deleteService(serviceId);
+
+      if (response?.success) {
+          toast.success("✅ Service deactivated successfully!");
+
+        await fetchServices();
+      } else {
+        setError(response?.message || "Failed to deactivate service.");
+      }
+    } catch (err) {
+      console.error("Failed to deactivate service:", err);
+      setError(
+        err?.response?.data?.message ||
+          "Failed to deactivate service. Please try again.",
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // =========================================================
+  // RENDER
+  // =========================================================
 
   return (
     <section className="services-section">
@@ -115,55 +242,110 @@ const ServiceManage = () => {
           </div>
         </div>
 
+        {/* ERROR MESSAGE */}
+        {error && (
+          <div className="service-error" role="alert">
+            {error}
+          </div>
+        )}
+
         {/* SERVICES LIST */}
         <div className="services-box">
-          {services.map((service) => (
-            <div className="service-item" key={service.id}>
-              {editingId === service.id ? (
-                /* EDIT MODE */
-                <div className="service-edit-form">
-                  <input
-                    type="text"
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    placeholder="Service name"
-                  />
-                  <textarea
-                    value={editDesc}
-                    onChange={(e) => setEditDesc(e.target.value)}
-                    placeholder="Service description"
-                    rows="3"
-                  />
-                  <div className="edit-actions">
-                    <button className="save-btn" onClick={saveEdit}>
-                      <FiCheck /> Save
-                    </button>
-                    <button className="cancel-btn" onClick={cancelEdit}>
-                      <FiX /> Cancel
-                    </button>
-                  </div>
+          {loading ? (
+            <div className="service-loading">Loading services...</div>
+          ) : services.length === 0 ? (
+            <div className="service-empty">No active services found.</div>
+          ) : (
+            services.map((service) => {
+              const isEditing = editingId === service.service_id;
+              const isDeleting = deletingId === service.service_id;
+
+              return (
+                <div
+                  className={`service-item${isDeleting ? " is-deleting" : ""}`}
+                  key={service.service_id}
+                >
+                  {isEditing ? (
+                    /* ========================= EDIT MODE ========================= */
+                    <div className="service-edit-form">
+                      <input
+                        type="text"
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        placeholder="Service name"
+                        disabled={saving}
+                        autoFocus
+                      />
+
+                      <textarea
+                        value={editDesc}
+                        onChange={(e) => setEditDesc(e.target.value)}
+                        placeholder="Service description"
+                        rows="3"
+                        disabled={saving}
+                      />
+
+                      <div className="edit-actions">
+                        <button
+                          type="button"
+                          className="save-btn"
+                          onClick={saveEdit}
+                          disabled={saving}
+                        >
+                          {saving ? <FiLoader className="spin" /> : <FiCheck />}
+                          {saving ? "Saving..." : "Save"}
+                        </button>
+
+                        <button
+                          type="button"
+                          className="cancel-btn"
+                          onClick={cancelEdit}
+                          disabled={saving}
+                        >
+                          <FiX />
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* ========================= VIEW MODE ========================= */
+                    <>
+                      <div className="service-text">
+                        <h4>{service.service_name}</h4>
+                        <p>{service.service_description}</p>
+                      </div>
+
+                      <div className="service-icons">
+                        <button
+                          type="button"
+                          className="icon-btn edit-icon"
+                          onClick={() => startEdit(service)}
+                          disabled={isDeleting}
+                          aria-label={`Edit ${service.service_name}`}
+                        >
+                          <FiEdit2 />
+                        </button>
+
+                        <button
+                          type="button"
+                          className="icon-btn delete-icon"
+                          onClick={() => setServiceToDelete(service)}
+                          disabled={isDeleting}
+                          aria-label={`Deactivate ${service.service_name}`}
+                        >
+                          {isDeleting ? (
+                            <Loader2 size={18} className="animate-spin" />
+                          ) : (
+                            <Trash2 size={18} />
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
-              ) : (
-                /* VIEW MODE */
-                <>
-                  <div className="service-text">
-                    <h4>{service.title}</h4>
-                    <p>{service.description}</p>
-                  </div>
-                  <div className="service-icons">
-                    <FiEdit2
-                      className="edit-icon"
-                      onClick={() => startEdit(service)}
-                    />
-                    <FiTrash2
-                      className="delete-icon"
-                      onClick={() => handleDelete(service.id)}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
+              );
+            })
+          )}
         </div>
 
         {/* ADD NEW SERVICE */}
@@ -179,16 +361,49 @@ const ServiceManage = () => {
               placeholder="Service name"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
+              disabled={adding}
             />
+
             <textarea
               placeholder="Service description"
               rows="6"
               value={newDesc}
               onChange={(e) => setNewDesc(e.target.value)}
+              disabled={adding}
             />
-            <button onClick={handleAdd}>ADD SERVICE</button>
+
+            <button
+              type="button"
+              onClick={() => {
+                console.log("ADD SERVICE BUTTON CLICKED");
+                handleAdd();
+              }}
+              disabled={adding}
+            >
+              {adding ? "ADDING..." : "ADD SERVICE"}
+            </button>
           </div>
         </div>
+        <ConfirmModal
+          isOpen={!!serviceToDelete}
+          title="Deactivate service?"
+          message={
+            serviceToDelete
+              ? `Are you sure you want to deactivate "${serviceToDelete.service_name}"? This service will no longer appear when creating new orders.`
+              : ""
+          }
+          confirmText="Deactivate"
+          cancelText="Cancel"
+          loading={
+            serviceToDelete ? deletingId === serviceToDelete.service_id : false
+          }
+          onCancel={() => setServiceToDelete(null)}
+          onConfirm={() => {
+            if (serviceToDelete) {
+              handleDelete(serviceToDelete.service_id);
+            }
+          }}
+        />
       </div>
     </section>
   );
