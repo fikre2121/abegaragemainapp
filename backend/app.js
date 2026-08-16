@@ -22,11 +22,14 @@ app.use(express.urlencoded({ extended: true }));
 import installRoutes from "./routs/install.routes.js";
 import employeeRoutes from "./routs/employee.routes.js";
 import authRoutes from "./routs/auth.routes.js";
+import serviceRoutes from "./routs/service.routes.js";
+
 
 // middlwares
 app.use("/", installRoutes);
 app.use("/api", employeeRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api", serviceRoutes);
 // Start server only if DB connect
 async function start() {
   try {
