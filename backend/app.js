@@ -24,7 +24,6 @@ import employeeRoutes from "./routs/employee.routes.js";
 import authRoutes from "./routs/auth.routes.js";
 import serviceRoutes from "./routs/service.routes.js";
 
-
 // middlwares
 app.use("/", installRoutes);
 app.use("/api", employeeRoutes);

@@ -11,14 +11,20 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
 
-    console.log("Connected to MySQL");
-
+    // console.log("Connected to MySQL");
+    console.log("✅ Connected to Aiven MySQL");
+    const [tables] = await connection.query("SHOW TABLES");
+    console.log("📋 Tables in Aiven database:");
+    console.table(tables);
     connection.release();
   } catch (error) {
     console.error("Database connection failed:", error.message);
