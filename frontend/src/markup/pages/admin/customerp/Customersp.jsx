@@ -6,11 +6,8 @@ function Customersp() {
   return (
     <div className="admin-layout">
       {/* Sidebar */}
-      
 
-     
-          <Customers />
-       
+      <Customers />
     </div>
   );
 }

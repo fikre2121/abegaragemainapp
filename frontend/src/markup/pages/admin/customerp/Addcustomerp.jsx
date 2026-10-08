@@ -4,9 +4,7 @@ import Adminmenu from "../../../components/adminmenu/Adminmenu";
 
 function Addcustomerp() {
   return (
-    <div className="admin-layout">
-      {/* Main Content */}
-
+    <div>
       <Addcustomer />
     </div>
   );
