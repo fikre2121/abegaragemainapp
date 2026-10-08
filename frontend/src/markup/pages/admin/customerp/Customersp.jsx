@@ -6,16 +6,11 @@ function Customersp() {
   return (
     <div className="admin-layout">
       {/* Sidebar */}
-      <div className="admin-sidebar">
-        <Adminmenu />
-      </div>
+      
 
-      {/* Main Content */}
-      <div className="admin-content">
-        <div className="container-fluid py-4">
+     
           <Customers />
-        </div>
-      </div>
+       
     </div>
   );
 }
