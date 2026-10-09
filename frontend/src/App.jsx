@@ -18,11 +18,11 @@ import EmployEdditp from "./markup/pages/admin/employee/EmployEdditp";
 import Employeesp from "./markup/pages/admin/employee/Employeesp";
 import ServiceManegp from "./markup/pages/admin/servicemanege/ServiceManegp";
 import AddVehicle from "./markup/components/add_vehicle/add_vehicle";
+
+// Layouts and route protection
 import AdminLayout from "./markup/pages/layout/AdminLayout";
-// Components
-import Header from "./markup/components/header/Header";
-import Foter from "./markup/components/footer/Foter";
 import ProtectedRoute from "./markup/components/protectedroute/ProtectedRoute";
+import PublicLayout from "./markup/pages/layout/PublicLayout";
 
 // CSS
 import "./assets/templateassets/css/bootstrap.css";
@@ -33,60 +33,35 @@ import "./assets/styles/custom.css";
 
 function App() {
   return (
-    <>
-      <Header />
-
-      <Routes>
-        {/* ==================== PUBLIC ROUTES ==================== */}
-
+    <Routes>
+      {/* PUBLIC WEBSITE LAYOUT */}
+      <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Service />} />
         <Route path="/contact" element={<ContactUS />} />
         <Route path="/login" element={<Login />} />
+      </Route>
 
-        {/* ==================== PROTECTED ADMIN ROUTES ==================== */}
-
-        {/* <Route element={<ProtectedRoute />}>
-          <Route path="/admin/add-customer" element={<Addcustomer />} />
-          <Route path="/admin" element={<Adminpage />} />
-
-          <Route path="/admin/customer-edit/:id" element={<CustomerEdditP />} />
-
-          <Route
-            path="/admin/customer-profile/:id"
-            element={<CustomerProfileP />}
-          />
-
-          <Route path="/admin/customers" element={<Customersp />} />
-
-          <Route path="/admin/add-employee" element={<Addemployee />} />
-
-          <Route path="/admin/edit-employee/:id" element={<EmployEdditp />} />
-
-          <Route path="/admin/employees" element={<Employeesp />} />
-
-          <Route path="/admin/service-manage" element={<ServiceManegp />} />
-
-          <Route path="/admin/add-vehicle" element={<AddVehicle />} />
-        </Route> */}
-        {/* to test */}
-
+      {/* PROTECTED ADMIN SECTION */}
+      <Route element={ProtectedRoute}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Adminpage />} />
+
           <Route path="customers" element={<Customersp />} />
           <Route path="add-customer" element={<Addcustomer />} />
           <Route path="edit-customer/:id" element={<CustomerEdditP />} />
+          <Route path="customer-profile/:id" element={<CustomerProfileP />} />
+
           <Route path="employees" element={<Employeesp />} />
           <Route path="add-employee" element={<Addemployee />} />
           <Route path="edit-employee/:id" element={<EmployEdditp />} />
+
           <Route path="service-manage" element={<ServiceManegp />} />
           <Route path="add-vehicle" element={<AddVehicle />} />
         </Route>
-      </Routes>
-
-      <Foter />
-    </>
+      </Route>
+    </Routes>
   );
 }
 
