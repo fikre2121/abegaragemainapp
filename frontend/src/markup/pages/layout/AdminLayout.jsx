@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Outlet, matchPath, useLocation } from "react-router-dom";
+import { Outlet, matchPath, useLocation, useNavigate } from "react-router-dom";
 import { Bell, LayoutDashboard, PanelLeft, X } from "lucide-react";
 
 import Adminmenu from "../../components/adminmenu/Adminmenu";
-
+import { useAuth } from "../../../context/ContextProvider";
 /* Styles live inside this file so no separate CSS file is needed */
 const styles = `
 .ap-root {
@@ -319,8 +319,10 @@ function usePageMeta(pathname) {
 function AdminLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
-  const { title, subtitle } = usePageMeta(pathname);
+    const navigate = useNavigate();
 
+  const { title, subtitle } = usePageMeta(pathname);
+  const { logout,user } = useAuth();
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   // On every page change: close the mobile drawer and scroll back to the top
@@ -333,7 +335,7 @@ function AdminLayout() {
   useEffect(() => {
     document.title = `${title} · Admin Panel`;
   }, [title]);
-
+console.log(user);
   // Lock background scroll while the mobile drawer is open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
@@ -358,7 +360,10 @@ function AdminLayout() {
       window.removeEventListener("resize", onResize);
     };
   }, [closeMenu]);
-
+  function handlelogout() {
+    logout();
+   navigate("/", { replace: true });
+  }
   return (
     <div className="ap-root">
       <style>{styles}</style>
@@ -428,6 +433,14 @@ function AdminLayout() {
 
             <div className="ap-header-right">
               <button
+                onClick={handlelogout}
+                className="theme-btn btn-style-one"
+                type="submit"
+                data-loading-text="Please wait..."
+              >
+                <span>Logout</span>
+              </button>
+              <button
                 type="button"
                 className="ap-icon-btn"
                 aria-label="Notifications"
@@ -435,9 +448,9 @@ function AdminLayout() {
                 <Bell size={19} />
                 <span className="ap-dot" aria-hidden="true" />
               </button>
-              <div className="ap-avatar" aria-label="Signed in as admin">
-                A
-              </div>
+              <span className="badge rounded-pill text-bg-primary">
+                {user.company_role_name}
+              </span>
             </div>
           </div>
         </header>
