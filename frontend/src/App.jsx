@@ -44,7 +44,7 @@ function App() {
       </Route>
 
       {/* PROTECTED ADMIN SECTION */}
-      <Route  element={ProtectedRoute}>
+      <Route element={<ProtectedRoute />}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Adminpage />} />
 
